@@ -45,11 +45,15 @@ class FakePlatformViewController extends PlatformViewController {
 }
 
 class FakeAndroidViewController implements AndroidViewController {
+<<<<<<< HEAD
   FakeAndroidViewController(
     this.viewId, {
     this.requiresSize = false,
     this.requiresViewComposition = false,
   });
+=======
+  FakeAndroidViewController(this.viewId, {this.requiresSize = false});
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
 
   bool disposed = false;
   bool focusCleared = false;
@@ -59,10 +63,13 @@ class FakeAndroidViewController implements AndroidViewController {
   bool requiresSize;
 
   bool _createCalledSuccessfully = false;
+<<<<<<< HEAD
 
   Offset? createPosition;
 
   final List<PlatformViewCreatedCallback> _createdCallbacks = <PlatformViewCreatedCallback>[];
+=======
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
 
   /// Events that are dispatched.
   List<PointerEvent> dispatchedPointerEvents = <PointerEvent>[];
@@ -118,9 +125,13 @@ class FakeAndroidViewController implements AndroidViewController {
   }
 
   @override
+<<<<<<< HEAD
   void removeOnPlatformViewCreatedListener(PlatformViewCreatedCallback listener) {
     createdCallbacks.remove(listener);
   }
+=======
+  void removeOnPlatformViewCreatedListener(PlatformViewCreatedCallback listener) {}
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
 
   @override
   Future<void> sendMotionEvent(AndroidMotionEvent event) {
@@ -133,6 +144,7 @@ class FakeAndroidViewController implements AndroidViewController {
   }
 
   @override
+<<<<<<< HEAD
   Future<void> create({Size? size, Offset? position}) async {
     assert(!_createCalledSuccessfully);
     if (requiresSize && size != null) {
@@ -140,6 +152,11 @@ class FakeAndroidViewController implements AndroidViewController {
     }
     _createCalledSuccessfully = size != null && position != null || !requiresSize;
     createPosition = position;
+=======
+  Future<void> create({Size? size}) async {
+    assert(!_createCalledSuccessfully);
+    _createCalledSuccessfully = size != null || !requiresSize;
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
   }
 
   @override

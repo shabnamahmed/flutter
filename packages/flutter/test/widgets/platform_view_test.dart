@@ -2503,6 +2503,7 @@ void main() {
     );
 
     testWidgets(
+<<<<<<< HEAD
       'PlatformViewLink widget should not trigger creation with an empty size',
       (WidgetTester tester) async {
         late PlatformViewController controller;
@@ -2545,6 +2546,8 @@ void main() {
     );
 
     testWidgets(
+=======
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
       'PlatformViewLink calls create when needed for Android texture display modes',
       (WidgetTester tester) async {
         final int currentViewId = platformViewsRegistry.getNextPlatformViewId();
@@ -2583,9 +2586,12 @@ void main() {
           equals(<String>['PlatformViewLink', '_PlatformViewPlaceHolder']),
         );
 
+<<<<<<< HEAD
         // Layout should have triggered a create call. Simulate the callback
         // that the real controller would make after creation.
         expect(controller.awaitingCreation, false);
+=======
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
         onPlatformViewCreatedCallBack(createdPlatformViewId);
 
         await tester.pump();
@@ -2596,6 +2602,7 @@ void main() {
         );
 
         expect(createdPlatformViewId, currentViewId + 1);
+<<<<<<< HEAD
       },
     );
 
@@ -2644,6 +2651,12 @@ void main() {
       TestWidgetsFlutterBinding.instance.window.clearDevicePixelRatioTestValue();
     });
 
+=======
+        expect(controller.awaitingCreation, false);
+      },
+    );
+
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
     testWidgets(
       'PlatformViewLink does not double-call create for Android Hybrid Composition',
       (WidgetTester tester) async {
@@ -2661,7 +2674,11 @@ void main() {
             controller = FakeAndroidViewController(params.id);
             controller.create();
             // This test should be simulating Hybrid Composition mode, where
+<<<<<<< HEAD
             // `create` takes effect immediately.
+=======
+            // `create` takes effect immidately.
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
             expect(controller.awaitingCreation, false);
             return controller;
           },

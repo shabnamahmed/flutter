@@ -389,7 +389,8 @@ class _ExpansionPanelListState extends State<ExpansionPanelList> {
           child: expandIconContainer,
         );
       }
-      Widget header = Row(
+      Widget header = Container(
+          child: Row(
         children: <Widget>[
           Expanded(
             child: AnimatedContainer(
@@ -407,7 +408,7 @@ class _ExpansionPanelListState extends State<ExpansionPanelList> {
           ),
           expandIconContainer,
         ],
-      );
+      ));
       if (child.canTapOnHeader) {
         header = MergeSemantics(
           child: InkWell(

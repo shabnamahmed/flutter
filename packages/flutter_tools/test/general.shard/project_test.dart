@@ -182,7 +182,11 @@ void main() {
       _testInMemory('checkForDeprecation fails on invalid android app manifest file', () async {
         // This is not a valid Xml document
         const String invalidManifest = '<manifest></application>';
+<<<<<<< HEAD
         final FlutterProject project = await someProject(androidManifestOverride: invalidManifest, includePubspec: true);
+=======
+        final FlutterProject project = await someProject(androidManifestOverride: invalidManifest);
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
 
         expect(
           () => project.checkForDeprecation(deprecationBehavior: DeprecationBehavior.ignore),
@@ -945,8 +949,12 @@ apply plugin: 'kotlin-android'
 }
 
 Future<FlutterProject> someProject({
+<<<<<<< HEAD
   String? androidManifestOverride,
   bool includePubspec = false,
+=======
+  String androidManifestOverride,
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
 }) async {
   final Directory directory = globals.fs.directory('some_project');
   directory.childDirectory('.dart_tool')

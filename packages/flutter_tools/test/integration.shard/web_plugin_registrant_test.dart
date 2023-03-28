@@ -116,6 +116,7 @@ void main() {
     expect(contents, contains('SharedPreferencesPlugin.registerWith(registrar);'));
     expect(contents, contains('registrar.registerMessageHandler();'));
   }, overrides: <Type, Generator>{
+<<<<<<< HEAD
     Pub: () => Pub.test(
       fileSystem: globals.fs,
       logger: globals.logger,
@@ -125,6 +126,16 @@ void main() {
       platform: globals.platform,
       stdio: globals.stdio,
     ),
+=======
+    Pub: () => Pub(
+          fileSystem: globals.fs,
+          logger: globals.logger,
+          processManager: globals.processManager,
+          usage: globals.flutterUsage,
+          botDetector: globals.botDetector,
+          platform: globals.platform,
+        ),
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
   });
 
 

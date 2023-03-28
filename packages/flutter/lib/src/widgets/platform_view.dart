@@ -878,11 +878,19 @@ class _PlatformViewLinkState extends State<PlatformViewLink> {
       return const SizedBox.expand();
     }
     if (!_platformViewCreated) {
+<<<<<<< HEAD
       // Depending on the implementation, the first non-empty size can be used
       // to size the platform view.
       return _PlatformViewPlaceHolder(onLayout: (Size size, Offset position) {
         if (controller.awaitingCreation && !size.isEmpty) {
           controller.create(size: size, position: position);
+=======
+      // Depending on the implementation, the initial size can be used to size
+      // the platform view.
+      return _PlatformViewPlaceHolder(onLayout: (Size size) {
+        if (controller.awaitingCreation) {
+          controller.create(size: size);
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
         }
       });
     }

@@ -779,10 +779,20 @@ abstract class AndroidViewController extends PlatformViewController {
   ///
   /// If [_createRequiresSize] is true, `size` is non-nullable, and the call
   /// should instead be deferred until the size is available.
+<<<<<<< HEAD
   Future<void> _sendCreateMessage({required covariant Size? size, Offset? position});
 
   /// Sends the message to resize the platform view to [size].
   Future<Size> _sendResizeMessage(Size size);
+=======
+  Future<void> _sendCreateMessage({required covariant Size? size});
+
+  /// Sends the message to resize the platform view to [size].
+  Future<Size> _sendResizeMessage(Size size);
+
+  @override
+  bool get awaitingCreation => _state == _AndroidViewState.waitingForSize;
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
 
   @override
   bool get awaitingCreation => _state == _AndroidViewState.waitingForSize;
@@ -798,7 +808,11 @@ abstract class AndroidViewController extends PlatformViewController {
     }
 
     _state = _AndroidViewState.creating;
+<<<<<<< HEAD
     await _sendCreateMessage(size: size, position: position);
+=======
+    await _sendCreateMessage(size: size);
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
     _state = _AndroidViewState.created;
 
     for (final PlatformViewCreatedCallback callback in _platformViewCreatedCallbacks) {
@@ -1077,6 +1091,7 @@ class ExpensiveAndroidViewController extends AndroidViewController {
   bool get _createRequiresSize => false;
 
   @override
+<<<<<<< HEAD
   Future<void> _sendCreateMessage({required Size? size, Offset? position}) async {
     await _AndroidViewControllerInternals.sendCreateMessage(
       viewId: viewId,
@@ -1086,6 +1101,25 @@ class ExpensiveAndroidViewController extends AndroidViewController {
       creationParams: _creationParams,
       position: position,
     );
+=======
+  Future<void> _sendCreateMessage({required Size? size}) async {
+    final Map<String, dynamic> args = <String, dynamic>{
+      'id': viewId,
+      'viewType': _viewType,
+      'direction': AndroidViewController._getAndroidDirection(_layoutDirection),
+      'hybrid': true,
+    };
+    if (_creationParams != null) {
+      final ByteData paramsByteData =
+          _creationParamsCodec!.encodeMessage(_creationParams)!;
+      args['params'] = Uint8List.view(
+        paramsByteData.buffer,
+        0,
+        paramsByteData.lengthInBytes,
+      );
+    }
+    await SystemChannels.platform_views.invokeMethod<void>('create', args);
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
   }
 
   @override
@@ -1105,7 +1139,11 @@ class ExpensiveAndroidViewController extends AndroidViewController {
 
   @override
   Future<Size> _sendResizeMessage(Size size) {
+<<<<<<< HEAD
     return _internals.setSize(size, viewId: viewId, viewState: _state);
+=======
+    throw UnimplementedError('Not supported for $SurfaceAndroidViewController.');
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
   }
 
   @override
@@ -1247,6 +1285,7 @@ class _TextureAndroidViewControllerInternals extends _AndroidViewControllerInter
   Offset _offset = Offset.zero;
 
   @override
+<<<<<<< HEAD
   int? textureId;
 
   @override
@@ -1259,6 +1298,11 @@ class _TextureAndroidViewControllerInternals extends _AndroidViewControllerInter
     required _AndroidViewState viewState,
   }) async {
     assert(viewState != _AndroidViewState.waitingForSize, 'Android view must have an initial size. View id: $viewId');
+=======
+  Future<Size> _sendResizeMessage(Size size) async {
+    assert(_state != _AndroidViewState.waitingForSize, 'Android view must have an initial size. View id: $viewId');
+    assert(size != null);
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
     assert(!size.isEmpty);
 
     final Map<Object?, Object?>? meta = await SystemChannels.platform_views.invokeMapMethod<Object?, Object?>(
@@ -1276,12 +1320,17 @@ class _TextureAndroidViewControllerInternals extends _AndroidViewControllerInter
   }
 
   @override
+<<<<<<< HEAD
   Future<void> setOffset(
     Offset offset, {
     required int viewId,
     required _AndroidViewState viewState,
   }) async {
     if (offset == _offset) {
+=======
+  Future<void> setOffset(Offset off) async {
+    if (off == _off) {
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
       return;
     }
 
@@ -1305,7 +1354,37 @@ class _TextureAndroidViewControllerInternals extends _AndroidViewControllerInter
   }
 
   @override
+<<<<<<< HEAD
   Future<void> sendDisposeMessage({required int viewId}) {
+=======
+  bool get _createRequiresSize => true;
+
+  @override
+  // Size is non-nullable due to _createRequiresSize returning true.
+  Future<void> _sendCreateMessage({required Size size}) async {
+    assert(!size.isEmpty, 'trying to create $TextureAndroidViewController without setting a valid size.');
+
+    final Map<String, dynamic> args = <String, dynamic>{
+      'id': viewId,
+      'viewType': _viewType,
+      'width': size.width,
+      'height': size.height,
+      'direction': AndroidViewController._getAndroidDirection(_layoutDirection),
+    };
+    if (_creationParams != null) {
+      final ByteData paramsByteData = _creationParamsCodec!.encodeMessage(_creationParams)!;
+      args['params'] = Uint8List.view(
+        paramsByteData.buffer,
+        0,
+        paramsByteData.lengthInBytes,
+      );
+    }
+    _textureId = await SystemChannels.platform_views.invokeMethod<int>('create', args);
+  }
+
+  @override
+  Future<void> _sendDisposeMessage() {
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
     return SystemChannels
         .platform_views.invokeMethod<void>('dispose', <String, dynamic>{
       'id': viewId,

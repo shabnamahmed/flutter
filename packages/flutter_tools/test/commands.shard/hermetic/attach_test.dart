@@ -57,6 +57,7 @@ void main() {
   group('attach', () {
     late StreamLogger logger;
     late FileSystem testFileSystem;
+<<<<<<< HEAD
     late TestDeviceManager testDeviceManager;
     late Artifacts artifacts;
     late Stdio stdio;
@@ -64,6 +65,8 @@ void main() {
     late Signals signals;
     late Platform platform;
     late ProcessInfo processInfo;
+=======
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
 
     setUp(() {
       Cache.disableLocking();
@@ -113,7 +116,45 @@ void main() {
           },
         );
 
+<<<<<<< HEAD
         testDeviceManager.devices = <Device>[device];
+=======
+        testDeviceManager.addDevice(device);
+        final Completer<void> completer = Completer<void>();
+        final StreamSubscription<String> loggerSubscription = logger.stream.listen((String message) {
+          if (message == '[verbose] Observatory URL on device: http://127.0.0.1:$devicePort') {
+            // The "Observatory URL on device" message is output by the ProtocolDiscovery when it found the observatory.
+            completer.complete();
+          }
+        });
+        final Future<void> task = createTestCommandRunner(AttachCommand()).run(<String>['attach']);
+        await completer.future;
+
+        expect(portForwarder.devicePort, devicePort);
+        expect(portForwarder.hostPort, hostPort);
+
+        await fakeLogReader.dispose();
+        await expectLoggerInterruptEndsTask(task, logger);
+        await loggerSubscription.cancel();
+      }, overrides: <Type, Generator>{
+        FileSystem: () => testFileSystem,
+        ProcessManager: () => FakeProcessManager.any(),
+        Logger: () => logger,
+        MDnsObservatoryDiscovery: () => MDnsObservatoryDiscovery(
+          mdnsClient: FakeMDnsClient(<PtrResourceRecord>[], <String, List<SrvResourceRecord>>{}),
+          logger: logger,
+          flutterUsage: TestUsage(),
+        ),
+      });
+
+      testUsingContext('finds observatory port and forwards', () async {
+        device.onGetLogReader = () {
+          fakeLogReader.addLine('Foo');
+          fakeLogReader.addLine('The Dart VM service is listening on http://127.0.0.1:$devicePort');
+          return fakeLogReader;
+        };
+        testDeviceManager.addDevice(device);
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
         final Completer<void> completer = Completer<void>();
         final StreamSubscription<String> loggerSubscription = logger.stream.listen((String message) {
           if (message == '[verbose] Observatory URL on device: http://127.0.0.1:$devicePort') {
@@ -651,7 +692,11 @@ void main() {
         throw vm_service.RPCError('flutter._listViews', RPCErrorCodes.kInvalidParams, '');
       };
 
+<<<<<<< HEAD
       testDeviceManager.devices = <Device>[device];
+=======
+      testDeviceManager.addDevice(device);
+>>>>>>> eb6d86ee27deecba4a83536aa20f366a6044895c
       testFileSystem.file('lib/main.dart').createSync();
 
       final AttachCommand command = AttachCommand(
@@ -1094,4 +1139,50 @@ class FakeTerminal extends Fake implements AnsiTerminal {
 
   @override
   bool usesTerminalUi = false;
+}
+
+class FakeMDnsClient extends Fake implements MDnsClient {
+  FakeMDnsClient(this.ptrRecords, this.srvResponse, {
+    this.txtResponse = const <String, List<TxtResourceRecord>>{},
+    this.osErrorOnStart = false,
+  });
+
+  final List<PtrResourceRecord> ptrRecords;
+  final Map<String, List<SrvResourceRecord>> srvResponse;
+  final Map<String, List<TxtResourceRecord>> txtResponse;
+  final bool osErrorOnStart;
+
+  @override
+  Future<void> start({
+    InternetAddress? listenAddress,
+    NetworkInterfacesFactory? interfacesFactory,
+    int mDnsPort = 5353,
+    InternetAddress? mDnsAddress,
+  }) async {
+    if (osErrorOnStart) {
+      throw const OSError('Operation not supported on socket', 102);
+    }
+  }
+
+  @override
+  Stream<T> lookup<T extends ResourceRecord>(
+    ResourceRecordQuery query, {
+    Duration timeout = const Duration(seconds: 5),
+  }) {
+    if (T == PtrResourceRecord && query.fullyQualifiedName == MDnsObservatoryDiscovery.dartObservatoryName) {
+      return Stream<PtrResourceRecord>.fromIterable(ptrRecords) as Stream<T>;
+    }
+    if (T == SrvResourceRecord) {
+      final String key = query.fullyQualifiedName;
+      return Stream<SrvResourceRecord>.fromIterable(srvResponse[key] ?? <SrvResourceRecord>[]) as Stream<T>;
+    }
+    if (T == TxtResourceRecord) {
+      final String key = query.fullyQualifiedName;
+      return Stream<TxtResourceRecord>.fromIterable(txtResponse[key] ?? <TxtResourceRecord>[]) as Stream<T>;
+    }
+    throw UnsupportedError('Unsupported query type $T');
+  }
+
+  @override
+  void stop() {}
 }
